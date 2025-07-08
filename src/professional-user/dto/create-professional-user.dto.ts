@@ -8,8 +8,12 @@ import {
   Validate,
   ValidationArguments,
   ValidatorConstraint,
-  ValidatorConstraintInterface
+  ValidatorConstraintInterface,
+  IsOptional,
+  IsUrl,
+  IsArray
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 @ValidatorConstraint({ name: 'MatchField' })
 export class MatchField implements ValidatorConstraintInterface {
@@ -25,7 +29,7 @@ export class MatchField implements ValidatorConstraintInterface {
   }
 }
 
-export class CreateUserDto {
+export class CreateProfessionalUserDto {
   @IsNotEmpty({ message: 'Name is required' })
   @IsString({ message: 'Name must be a string' })
   @MaxLength(50, { message: 'Name must have at most 50 characters' })
@@ -57,4 +61,36 @@ export class CreateUserDto {
   @IsNotEmpty({ message: 'Password confirmation is required' })
   @Validate(MatchField, ['password'], { message: 'Password confirmation must be equal to password' })
   confirmPassword: string;
-}
+
+  @IsNotEmpty({ message: 'Business name is required' })
+  @IsString({ message: 'Business name must be a string' })
+  @MaxLength(100, { message: 'Business name must have at most 100 characters' })
+  businessName: string;
+
+  @IsNotEmpty({ message: 'Business description is required' })
+  @IsString({ message: 'Business description must be a string' })
+  @MinLength(10, { message: 'Business description must have at least 10 characters' })
+  @MaxLength(1000, { message: 'Business description must have at most 1000 characters' })
+  businessDescription: string;
+
+  @IsOptional()
+  @IsArray({ message: 'Photos must be an array' })
+  @IsUrl({}, { each: true, message: 'Each photo must be a valid URL' })
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      try {
+        return JSON.parse(value);
+      } catch {
+        return value;
+      }
+    }
+    return value;
+  })
+  photos?: string[];
+
+  @IsOptional()
+  @IsString({ message: 'Website must be a string' })
+  @IsUrl({}, { message: 'Website must be a valid URL' })
+  @MaxLength(255, { message: 'Website must have at most 255 characters' })
+  website?: string;
+} 

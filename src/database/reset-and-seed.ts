@@ -1,41 +1,44 @@
 import { DataSource } from 'typeorm';
 import { User } from '../user/entities/user.entity';
+import { ProfessionalUser } from '../professional-user/entities/professional-user.entity';
 import { seed } from './seed';
 
 export const AppDataSource = new DataSource({
   type: 'sqlite',
   database: 'database.sqlite',
-  entities: [User],
+  entities: [User, ProfessionalUser],
   synchronize: true,
 });
 
 async function resetAndSeed() {
   try {
-    // Inicializar conexão
+    // Initialize connection
     await AppDataSource.initialize();
-    console.log('📊 Conexão com banco de dados estabelecida');
+    console.log('📊 Database connection established');
 
-    // Obter repositório
+    // Get repositories
     const userRepository = AppDataSource.getRepository(User);
+    const professionalUserRepository = AppDataSource.getRepository(ProfessionalUser);
 
-    // Limpar tabela de usuários
-    console.log('🗑️  Limpando tabela de usuários...');
+    // Clear tables
+    console.log('🗑️  Clearing users and professional users tables...');
     await userRepository.clear();
-    console.log('✅ Tabela de usuários limpa');
+    await professionalUserRepository.clear();
+    console.log('✅ Users and professional users tables cleared');
 
-    // Fechar conexão atual
+    // Close current connection
     await AppDataSource.destroy();
 
-    // Executar seed
-    console.log('🌱 Iniciando repopulação...');
+    // Execute seed
+    console.log('🌱 Starting repopulation...');
     await seed();
 
   } catch (error) {
-    console.error('❌ Erro durante reset e seed:', error);
+    console.error('❌ Error during reset and seed:', error);
   }
 }
 
-// Executar se este arquivo for chamado diretamente
+// Execute if this file is called directly
 if (require.main === module) {
   resetAndSeed();
 }

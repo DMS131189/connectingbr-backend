@@ -1,36 +1,39 @@
 import { DataSource } from 'typeorm';
 import { User } from '../user/entities/user.entity';
+import { ProfessionalUser } from '../professional-user/entities/professional-user.entity';
 
 export const AppDataSource = new DataSource({
   type: 'sqlite',
   database: 'database.sqlite',
-  entities: [User],
+  entities: [User, ProfessionalUser],
   synchronize: true,
 });
 
 async function seed() {
   try {
-    // Inicializar conexão
+    // Initialize connection
     await AppDataSource.initialize();
-    console.log('📊 Conexão com banco de dados estabelecida');
+    console.log('📊 Database connection established');
 
-    // Obter repositório
+    // Get repositories
     const userRepository = AppDataSource.getRepository(User);
+    const professionalUserRepository = AppDataSource.getRepository(ProfessionalUser);
 
-    // Verificar se já existem usuários
+    // Check if users already exist
     const existingUsers = await userRepository.count();
-    if (existingUsers > 0) {
-      console.log(`⚠️  Já existem ${existingUsers} usuários no banco. Pulando seed...`);
+    const existingProfessionalUsers = await professionalUserRepository.count();
+    if (existingUsers > 0 || existingProfessionalUsers > 0) {
+      console.log(`⚠️  ${existingUsers} users and ${existingProfessionalUsers} professional users already exist in database. Skipping seed...`);
       return;
     }
 
-    // Dados de seed para usuários
+    // Seed data for users
     const seedUsers = [
       {
         name: 'João',
         surname: 'Silva',
         email: 'joao.silva@example.com',
-        password: 'MinhaSenh@123', // Em produção, fazer hash da senha
+        password: 'MinhaSenh@123', // In production, hash the password
       },
       {
         name: 'Maria',
@@ -88,27 +91,111 @@ async function seed() {
       }
     ];
 
-    // Inserir usuários
-    console.log('🌱 Iniciando seed de usuários...');
+    // Insert users
+    console.log('🌱 Starting user seed...');
     
     for (const userData of seedUsers) {
       const user = userRepository.create(userData);
       await userRepository.save(user);
-      console.log(`✅ Usuário criado: ${userData.name} ${userData.surname} (${userData.email})`);
+      console.log(`✅ User created: ${userData.name} ${userData.surname} (${userData.email})`);
     }
 
-    console.log(`🎉 Seed concluído! ${seedUsers.length} usuários foram inseridos no banco de dados.`);
+    console.log(`🎉 User seed completed! ${seedUsers.length} users were inserted into the database.`);
+
+    // Seed data for professional users
+    const seedProfessionalUsers = [
+      {
+        name: 'Alice',
+        surname: 'Johnson',
+        email: 'alice.johnson@business.com',
+        password: 'Business@123',
+        businessName: 'Johnson Photography',
+        businessDescription: 'Professional photography services for weddings, events, and portraits. Over 10 years of experience capturing life\'s precious moments.',
+        photos: JSON.stringify([
+          'https://example.com/photo1.jpg',
+          'https://example.com/photo2.jpg',
+          'https://example.com/photo3.jpg'
+        ]),
+        website: 'https://johnsonphotography.com'
+      },
+      {
+        name: 'Michael',
+        surname: 'Brown',
+        email: 'michael.brown@consulting.com',
+        password: 'Consult@456',
+        businessName: 'Brown Business Consulting',
+        businessDescription: 'Strategic business consulting for small and medium enterprises. Helping businesses grow and optimize their operations.',
+        photos: JSON.stringify([
+          'https://example.com/consulting1.jpg',
+          'https://example.com/consulting2.jpg'
+        ]),
+        website: 'https://brownbusinessconsulting.com'
+      },
+      {
+        name: 'Sarah',
+        surname: 'Davis',
+        email: 'sarah.davis@design.com',
+        password: 'Design@789',
+        businessName: 'Davis Creative Design',
+        businessDescription: 'Modern graphic design and branding solutions for startups and established companies. Creating visual identities that make an impact.',
+        photos: JSON.stringify([
+          'https://example.com/design1.jpg',
+          'https://example.com/design2.jpg',
+          'https://example.com/design3.jpg',
+          'https://example.com/design4.jpg'
+        ]),
+        website: 'https://daviscreativedesign.com'
+      },
+      {
+        name: 'James',
+        surname: 'Wilson',
+        email: 'james.wilson@fitness.com',
+        password: 'Fitness@321',
+        businessName: 'Wilson Personal Training',
+        businessDescription: 'Certified personal trainer specializing in weight loss, muscle building, and athletic performance. Transform your body and lifestyle.',
+        photos: JSON.stringify([
+          'https://example.com/fitness1.jpg',
+          'https://example.com/fitness2.jpg'
+        ]),
+        website: 'https://wilsonpersonaltraining.com'
+      },
+      {
+        name: 'Emma',
+        surname: 'Taylor',
+        email: 'emma.taylor@catering.com',
+        password: 'Catering@654',
+        businessName: 'Taylor Gourmet Catering',
+        businessDescription: 'Premium catering services for corporate events, weddings, and private parties. Fresh ingredients and exceptional presentation.',
+        photos: JSON.stringify([
+          'https://example.com/catering1.jpg',
+          'https://example.com/catering2.jpg',
+          'https://example.com/catering3.jpg'
+        ]),
+        website: 'https://taylorgourmetcatering.com'
+      }
+    ];
+
+    // Insert professional users
+    console.log('🌱 Starting professional user seed...');
+    
+    for (const professionalUserData of seedProfessionalUsers) {
+      const professionalUser = professionalUserRepository.create(professionalUserData);
+      await professionalUserRepository.save(professionalUser);
+      console.log(`✅ Professional user created: ${professionalUserData.name} ${professionalUserData.surname} - ${professionalUserData.businessName}`);
+    }
+
+    console.log(`🎉 Professional user seed completed! ${seedProfessionalUsers.length} professional users were inserted into the database.`);
 
   } catch (error) {
-    console.error('❌ Erro durante o seed:', error);
+    console.error('❌ Error during seed:', error);
   } finally {
-    // Fechar conexão
+    // Close connection
     await AppDataSource.destroy();
-    console.log('🔌 Conexão com banco de dados fechada');
+    console.log('🔌 Database connection closed');
   }
 }
 
-// Executar seed se este arquivo for chamado diretamente
+// Execute seed if this file is called directly
 if (require.main === module) {
   seed();
 }

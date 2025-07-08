@@ -13,22 +13,22 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<Omit<User, 'password'>> {
-    // Verificar se email já existe
+    // Check if email already exists
     const existingUser = await this.userRepository.findOne({
       where: { email: createUserDto.email }
     });
     
     if (existingUser) {
-      throw new ConflictException('Email já está em uso');
+      throw new ConflictException('Email is already in use');
     }
 
-    // Criar novo usuário (removendo campos de confirmação)
+    // Create new user (removing confirmation fields)
     const { confirmEmail, confirmPassword, ...userData } = createUserDto;
     
     const user = this.userRepository.create(userData);
     const savedUser = await this.userRepository.save(user);
 
-    // Retornar usuário sem a senha
+    // Return user without password
     const { password, ...userWithoutPassword } = savedUser;
     return userWithoutPassword;
   }
@@ -45,7 +45,7 @@ export class UserService {
     const user = await this.userRepository.findOne({ where: { id } });
     
     if (!user) {
-      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
+      throw new NotFoundException(`User with ID ${id} not found`);
     }
 
     const { password, ...userWithoutPassword } = user;
@@ -56,26 +56,26 @@ export class UserService {
     const user = await this.userRepository.findOne({ where: { id } });
     
     if (!user) {
-      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
+      throw new NotFoundException(`User with ID ${id} not found`);
     }
 
-    // Verificar se novo email já está em uso (se fornecido)
+    // Check if new email is already in use (if provided)
     if (updateUserDto.email && updateUserDto.email !== user.email) {
       const existingUser = await this.userRepository.findOne({
         where: { email: updateUserDto.email }
       });
       
       if (existingUser) {
-        throw new ConflictException('Email já está em uso');
+        throw new ConflictException('Email is already in use');
       }
     }
 
-    // Atualizar usuário
+    // Update user
     await this.userRepository.update(id, updateUserDto);
     const updatedUser = await this.userRepository.findOne({ where: { id } });
 
     if (!updatedUser) {
-      throw new NotFoundException(`Usuário com ID ${id} não encontrado após atualização`);
+      throw new NotFoundException(`User with ID ${id} not found after update`);
     }
 
     const { password, ...userWithoutPassword } = updatedUser;
@@ -86,10 +86,10 @@ export class UserService {
     const user = await this.userRepository.findOne({ where: { id } });
     
     if (!user) {
-      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
+      throw new NotFoundException(`User with ID ${id} not found`);
     }
 
     await this.userRepository.delete(id);
-    return { message: `Usuário com ID ${id} removido com sucesso` };
+    return { message: `User with ID ${id} successfully removed` };
   }
 }
