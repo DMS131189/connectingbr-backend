@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -22,26 +23,49 @@ export class UserService {
       throw new ConflictException('Email is already in use');
     }
 
+    // Hash password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(createUserDto.password, saltRounds);
+
     // Create new user (removing confirmation fields)
-    const { confirmEmail, confirmPassword, ...userData } = createUserDto;
+    const { confirmEmail, confirmPassword, photos, ...userData } = createUserDto;
     
-    const user = this.userRepository.create(userData);
+    // Handle photos array conversion to JSON string
+    const photosString = photos ? JSON.stringify(photos) : undefined;
+    
+    const user = this.userRepository.create({
+      ...userData,
+      password: hashedPassword,
+      photos: photosString
+    });
+    
     const savedUser = await this.userRepository.save(user);
 
     // Return user without password
     const { password, ...userWithoutPassword } = savedUser;
-    return userWithoutPassword;
+    return {
+      ...userWithoutPassword,
+      photos: userWithoutPassword.photos ? JSON.parse(userWithoutPassword.photos) : []
+    } as any;
   }
 
   async findAll(): Promise<Omit<User, 'password'>[]> {
     const users = await this.userRepository.find();
     return users.map(user => {
       const { password, ...userWithoutPassword } = user;
-      return userWithoutPassword;
+      return {
+        ...userWithoutPassword,
+        photos: userWithoutPassword.photos ? JSON.parse(userWithoutPassword.photos) : []
+      } as any;
     });
   }
 
   async findOne(id: number): Promise<Omit<User, 'password'>> {
+    // Validate that id is a valid number
+    if (!id || isNaN(id) || id <= 0) {
+      throw new NotFoundException(`Invalid user ID: ${id}`);
+    }
+
     const user = await this.userRepository.findOne({ where: { id } });
     
     if (!user) {
@@ -49,7 +73,10 @@ export class UserService {
     }
 
     const { password, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    return {
+      ...userWithoutPassword,
+      photos: userWithoutPassword.photos ? JSON.parse(userWithoutPassword.photos) : []
+    } as any;
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<Omit<User, 'password'>> {
@@ -70,8 +97,14 @@ export class UserService {
       }
     }
 
+    // Handle photos array conversion if provided
+    const updateData: any = { ...updateUserDto };
+    if (updateData.photos) {
+      updateData.photos = JSON.stringify(updateData.photos);
+    }
+
     // Update user
-    await this.userRepository.update(id, updateUserDto);
+    await this.userRepository.update(id, updateData);
     const updatedUser = await this.userRepository.findOne({ where: { id } });
 
     if (!updatedUser) {
@@ -79,7 +112,10 @@ export class UserService {
     }
 
     const { password, ...userWithoutPassword } = updatedUser;
-    return userWithoutPassword;
+    return {
+      ...userWithoutPassword,
+      photos: userWithoutPassword.photos ? JSON.parse(userWithoutPassword.photos) : []
+    } as any;
   }
 
   async remove(id: number): Promise<{ message: string }> {

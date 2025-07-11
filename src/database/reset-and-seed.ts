@@ -1,12 +1,11 @@
 import { DataSource } from 'typeorm';
 import { User } from '../user/entities/user.entity';
-import { ProfessionalUser } from '../professional-user/entities/professional-user.entity';
 import { seed } from './seed';
 
 export const AppDataSource = new DataSource({
   type: 'sqlite',
   database: 'database.sqlite',
-  entities: [User, ProfessionalUser],
+  entities: [User],
   synchronize: true,
 });
 
@@ -18,13 +17,11 @@ async function resetAndSeed() {
 
     // Get repositories
     const userRepository = AppDataSource.getRepository(User);
-    const professionalUserRepository = AppDataSource.getRepository(ProfessionalUser);
 
     // Clear tables
-    console.log('🗑️  Clearing users and professional users tables...');
+    console.log('🗑️  Clearing users table...');
     await userRepository.clear();
-    await professionalUserRepository.clear();
-    console.log('✅ Users and professional users tables cleared');
+    console.log('✅ Users table cleared');
 
     // Close current connection
     await AppDataSource.destroy();

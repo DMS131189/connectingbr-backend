@@ -17,6 +17,18 @@ export class User {
   @Column()
   password: string;
 
+  @Column({ name: 'business_name', length: 100, nullable: true })
+  businessName: string;
+
+  @Column({ name: 'business_description', type: 'text', nullable: true })
+  businessDescription: string;
+
+  @Column({ type: 'text', nullable: true })
+  photos: string; // JSON string array of photo URLs
+
+  @Column({ length: 255, nullable: true })
+  website: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

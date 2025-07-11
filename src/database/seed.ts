@@ -1,11 +1,10 @@
 import { DataSource } from 'typeorm';
 import { User } from '../user/entities/user.entity';
-import { ProfessionalUser } from '../professional-user/entities/professional-user.entity';
 
 export const AppDataSource = new DataSource({
   type: 'sqlite',
   database: 'database.sqlite',
-  entities: [User, ProfessionalUser],
+  entities: [User],
   synchronize: true,
 });
 
@@ -17,13 +16,11 @@ async function seed() {
 
     // Get repositories
     const userRepository = AppDataSource.getRepository(User);
-    const professionalUserRepository = AppDataSource.getRepository(ProfessionalUser);
 
     // Check if users already exist
     const existingUsers = await userRepository.count();
-    const existingProfessionalUsers = await professionalUserRepository.count();
-    if (existingUsers > 0 || existingProfessionalUsers > 0) {
-      console.log(`⚠️  ${existingUsers} users and ${existingProfessionalUsers} professional users already exist in database. Skipping seed...`);
+    if (existingUsers > 0) {
+      console.log(`⚠️  ${existingUsers} users already exist in database. Skipping seed...`);
       return;
     }
 
@@ -175,12 +172,12 @@ async function seed() {
       }
     ];
 
-    // Insert professional users
+    // Insert professional users as regular users with business data
     console.log('🌱 Starting professional user seed...');
     
     for (const professionalUserData of seedProfessionalUsers) {
-      const professionalUser = professionalUserRepository.create(professionalUserData);
-      await professionalUserRepository.save(professionalUser);
+      const user = userRepository.create(professionalUserData);
+      await userRepository.save(user);
       console.log(`✅ Professional user created: ${professionalUserData.name} ${professionalUserData.surname} - ${professionalUserData.businessName}`);
     }
 
