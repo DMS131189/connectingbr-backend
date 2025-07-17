@@ -39,10 +39,10 @@ async function seed() {
         password: 'SenhaSegur@456',
       },
       {
-        name: 'Pedro',
-        surname: 'Oliveira',
-        email: 'pedro.oliveira@example.com',
-        password: 'Password@789',
+        name: 'Deyse',
+        surname: 'Santos',
+        email: 'deyse.santos@example.com',
+        password: 'Deyse@123',
       },
       {
         name: 'Ana',
@@ -54,7 +54,7 @@ async function seed() {
         name: 'Carlos',
         surname: 'Pereira',
         email: 'carlos.pereira@example.com',
-        password: 'SuperSenh@2024',
+        password: 'SuperSen9h@2024',
       },
       {
         name: 'Lucia',
