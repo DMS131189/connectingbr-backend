@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -18,6 +18,24 @@ export class UserController {
   //@UseGuards(JwtAuthGuard)
   findAll() {
     return this.userService.findAll();
+  }
+
+  @Get('professionals')
+  findProfessionals() {
+    return this.userService.findProfessionals();
+  }
+
+  @Get('search')
+  searchProfessionals(@Query('q') query: string) {
+    if (!query) {
+      return this.userService.findProfessionals();
+    }
+    return this.userService.searchProfessionals(query);
+  }
+
+  @Get('category/:categoryId')
+  findByCategory(@Param('categoryId') categoryId: string) {
+    return this.userService.findByCategory(+categoryId);
   }
 
   @Get(':id')

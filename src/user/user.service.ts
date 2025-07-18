@@ -128,4 +128,57 @@ export class UserService {
     await this.userRepository.delete(id);
     return { message: `User with ID ${id} successfully removed` };
   }
+
+  async findByCategory(categoryId: number): Promise<Omit<User, 'password'>[]> {
+    const users = await this.userRepository.find({
+      where: { categoryId },
+      relations: ['category'],
+      order: { createdAt: 'DESC' }
+    });
+
+    return users.map(user => {
+      const { password, ...userWithoutPassword } = user;
+      return {
+        ...userWithoutPassword,
+        photos: userWithoutPassword.photos ? JSON.parse(userWithoutPassword.photos) : []
+      } as any;
+    });
+  }
+
+  async searchProfessionals(query: string): Promise<Omit<User, 'password'>[]> {
+    const users = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.category', 'category')
+      .where('user.businessName LIKE :query OR user.businessDescription LIKE :query OR user.name LIKE :query OR user.surname LIKE :query', {
+        query: `%${query}%`
+      })
+      .andWhere('user.businessName IS NOT NULL') // Only professionals
+      .orderBy('user.createdAt', 'DESC')
+      .getMany();
+
+    return users.map(user => {
+      const { password, ...userWithoutPassword } = user;
+      return {
+        ...userWithoutPassword,
+        photos: userWithoutPassword.photos ? JSON.parse(userWithoutPassword.photos) : []
+      } as any;
+    });
+  }
+
+  async findProfessionals(): Promise<Omit<User, 'password'>[]> {
+    const users = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.category', 'category')
+      .where('user.businessName IS NOT NULL')
+      .orderBy('user.createdAt', 'DESC')
+      .getMany();
+
+    return users.map(user => {
+      const { password, ...userWithoutPassword } = user;
+      return {
+        ...userWithoutPassword,
+        photos: userWithoutPassword.photos ? JSON.parse(userWithoutPassword.photos) : []
+      } as any;
+    });
+  }
 }

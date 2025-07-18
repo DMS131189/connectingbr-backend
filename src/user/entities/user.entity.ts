@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -28,6 +28,13 @@ export class User {
 
   @Column({ length: 255, nullable: true })
   website: string;
+
+  @Column({ nullable: true })
+  categoryId: number;
+
+  @ManyToOne('Category', { nullable: true })
+  @JoinColumn({ name: 'categoryId' })
+  category: any;
 
   @CreateDateColumn()
   createdAt: Date;
