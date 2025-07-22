@@ -13,4 +13,6 @@ export class CreateReviewDto {
 
   @IsNumber({}, { message: 'Professional ID must be a number' })
   @IsNotEmpty({ message: 'Professional ID is required' })
+  professionalId: number;
+}
  

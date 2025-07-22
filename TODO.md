@@ -98,3 +98,10 @@ Agora precisamos implementar:
 - Armazenamento de imagens (local ou cloud)
 - Endpoints para upload e gerenciamento de imagens
 - Validação de tipos e tamanhos de arquivo 
+
+
+[] Maps para localização do local do business. Integrado com a API do Google Maps.
+
+[] Link do profile do login...assim também como o logout.
+
+
