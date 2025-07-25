@@ -4,19 +4,19 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
-import { User } from './user/entities/user.entity';
 import { CategoryModule } from './category/category.module';
-import { Category } from './category/entities/category.entity';
 import { ReviewModule } from './review/review.module';
-import { Review } from './review/entities/review.entity';
+import { getDatabaseConfig } from './config/database.config';
+import { ConfigService } from './config/config.service';
+import { ConfigModule } from './config/config.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: 'database.sqlite',
-      entities: [User, Category, Review],
-      synchronize: true, // for development only
+    ConfigModule,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => getDatabaseConfig(configService),
+      inject: [ConfigService],
     }),
     UserModule,
     AuthModule,
