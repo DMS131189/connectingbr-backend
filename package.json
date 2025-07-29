@@ -1,9 +1,8 @@
 {
   "name": "connectingbr",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
-  "private": true,
+  "description": "ConnectingBr App - Back-end",
+  "author": "@DMS131189",
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
