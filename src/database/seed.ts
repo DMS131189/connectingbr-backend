@@ -1,10 +1,13 @@
 import { DataSource } from 'typeorm';
 import { User } from '../user/entities/user.entity';
+import { Category } from '../category/entities/category.entity';
+import { Service } from '../service/entities/service.entity';
+import { Review } from '../review/entities/review.entity';
 
 export const AppDataSource = new DataSource({
   type: 'sqlite',
   database: 'database.sqlite',
-  entities: [User],
+  entities: [User, Category, Service, Review],
   synchronize: true,
 });
 

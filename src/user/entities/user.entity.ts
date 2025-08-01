@@ -1,4 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Category } from '../../category/entities/category.entity';
 
 @Entity()
 export class User {
@@ -32,9 +33,9 @@ export class User {
   @Column({ nullable: true })
   categoryId: number;
 
-  @ManyToOne('Category', { nullable: true })
+  @ManyToOne(() => Category, { nullable: true })
   @JoinColumn({ name: 'categoryId' })
-  category: any;
+  category: Category;
 
   @CreateDateColumn()
   createdAt: Date;
