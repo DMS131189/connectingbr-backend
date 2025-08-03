@@ -21,6 +21,6 @@ async function bootstrap() {
   }));
 
   await app.listen(3000);
-  console.log('🚀 ConnectingBR running on port: 3000. Environment: ' + process.env.NODE_EN);
+  console.log('🚀 ConnectingBR running on port: 3000. Environment: ' + process.env.NODE_ENV);
 }
 bootstrap();
