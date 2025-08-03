@@ -33,11 +33,16 @@ export class ServiceService {
   }
 
   findAll() {
-    return this.serviceRepository.find();
+    return this.serviceRepository.find({
+      relations: ['category', 'provider']
+    });
   }
 
   async findOne(id: string) {
-    const service = await this.serviceRepository.findOne({ where: { id } });
+    const service = await this.serviceRepository.findOne({ 
+      where: { id },
+      relations: ['category', 'provider']
+    });
     if (!service) {
       throw new NotFoundException(`Service with ID ${id} not found`);
     }

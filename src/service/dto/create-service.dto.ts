@@ -18,6 +18,6 @@ export class CreateServiceDto {
   @Max(5)
   rating: number;
 
-  @IsString()
-  provider: string;
+  @IsNumber()
+  providerId: number;
 }

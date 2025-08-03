@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Category } from '../../category/entities/category.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Entity()
 export class Service {
@@ -25,6 +26,10 @@ export class Service {
   @Column('float')
   rating: number;
 
-  @Column()
-  provider: string;
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'providerId' })
+  provider: User;
+
+  @Column({ name: 'providerId' })
+  providerId: number;
 }

@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { Category } from '../../category/entities/category.entity';
+import { Service } from '../../service/entities/service.entity';
 import { UserRole } from '../enums/user-role.enum';
 
 @Entity()
@@ -37,6 +38,9 @@ export class User {
 
   @Column({ length: 255, nullable: true })
   website: string;
+
+  @OneToMany(() => Service, service => service.provider)
+  services: Service[];
 
   @Column({ nullable: true })
   categoryId: number;
