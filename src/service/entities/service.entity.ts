@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Category } from '../../category/entities/category.entity';
 
 @Entity()
 export class Service {
@@ -8,8 +9,12 @@ export class Service {
   @Column()
   name: string;
 
-  @Column()
-  category: string;
+  @ManyToOne(() => Category)
+  @JoinColumn({ name: 'categoryId' })
+  category: Category;
+
+  @Column({ name: 'categoryId' })
+  categoryId: number;
 
   @Column()
   description: string;

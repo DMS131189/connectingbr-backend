@@ -10,6 +10,7 @@ import { getDatabaseConfig } from './config/database.config';
 import { ConfigService } from './config/config.service';
 import { ConfigModule } from './config/config.module';
 import { ServiceModule } from './service/service.module';
+import { DatabaseSeederModule } from './database/database-seeder.module';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { ServiceModule } from './service/service.module';
     AuthModule,
     CategoryModule,
     ReviewModule,
-    ServiceModule
+    ServiceModule,
+    DatabaseSeederModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -4,16 +4,31 @@ import { Repository } from 'typeorm';
 import { CreateServiceDto } from './dto/create-service.dto';
 import { UpdateServiceDto } from './dto/update-service.dto';
 import { Service } from './entities/service.entity';
+import { Category } from '../category/entities/category.entity';
 
 @Injectable()
 export class ServiceService {
   constructor(
     @InjectRepository(Service)
     private readonly serviceRepository: Repository<Service>,
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
   ) {}
 
-  create(createServiceDto: CreateServiceDto) {
-    const service = this.serviceRepository.create(createServiceDto);
+  async create(createServiceDto: CreateServiceDto) {
+    const category = await this.categoryRepository.findOne({
+      where: { id: createServiceDto.categoryId }
+    });
+
+    if (!category) {
+      throw new NotFoundException(`Category with ID ${createServiceDto.categoryId} not found`);
+    }
+
+    const service = this.serviceRepository.create({
+      ...createServiceDto,
+      category
+    });
+    
     return this.serviceRepository.save(service);
   }
 
