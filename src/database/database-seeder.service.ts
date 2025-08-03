@@ -2,6 +2,7 @@ import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { seedCategories } from './seeds/category.seed';
 import { seedServices } from './seeds/service.seed';
+import { seedUsers } from './seeds/user.seed';
 
 @Injectable()
 export class DatabaseSeederService implements OnApplicationBootstrap {
@@ -12,8 +13,9 @@ export class DatabaseSeederService implements OnApplicationBootstrap {
       console.log('🌱 Starting database seeding...');
       
       // Execute seeds in order
-      await seedCategories(this.dataSource);
-      await seedServices(this.dataSource);
+      await seedUsers(this.dataSource);     // Users first
+      await seedCategories(this.dataSource); // Then categories
+      await seedServices(this.dataSource);   // Then services
       
       console.log('✅ Database seeding completed');
     } catch (error) {
