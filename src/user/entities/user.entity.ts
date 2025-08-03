@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Category } from '../../category/entities/category.entity';
+import { UserRole } from '../enums/user-role.enum';
 
 @Entity()
 export class User {
@@ -17,6 +18,13 @@ export class User {
 
   @Column()
   password: string;
+
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.CLIENT
+  })
+  role: UserRole;
 
   @Column({ name: 'business_name', length: 100, nullable: true })
   businessName: string;

@@ -11,8 +11,10 @@ import {
   ValidatorConstraintInterface,
   IsOptional,
   IsUrl,
-  IsArray
+  IsArray,
+  IsEnum
 } from 'class-validator';
+import { UserRole } from '../enums/user-role.enum';
 import { Transform } from 'class-transformer';
 
 @ValidatorConstraint({ name: 'MatchField' })
@@ -61,6 +63,10 @@ export class CreateUserDto {
   @IsNotEmpty({ message: 'Password confirmation is required' })
   @Validate(MatchField, ['password'], { message: 'Password confirmation must be equal to password' })
   confirmPassword: string;
+
+  @IsOptional()
+  @IsEnum(UserRole, { message: 'Role must be either admin, client, or professional' })
+  role?: UserRole;
 
   @IsOptional()
   @IsString({ message: 'Business name must be a string' })
