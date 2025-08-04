@@ -9,11 +9,17 @@ export class Category {
   @Column({ unique: true, length: 100 })
   name: string;
 
+  @Column({ unique: true, length: 100 })
+  value: string;
+
   @Column({ type: 'text', nullable: true })
   description: string;
 
   @Column({ length: 255, nullable: true })
-  icon: string; // URL or icon class name
+  icon: string;
+
+  @Column({ length: 7, nullable: true })
+  color: string;
 
   @Column({ default: true })
   isActive: boolean;
@@ -27,7 +33,7 @@ export class Category {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  // Relationship with users (many-to-many would be better, but keeping it simple for now)
+  // Relationship with users
   @OneToMany(() => User, user => user.category)
   users: User[];
 } 

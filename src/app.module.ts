@@ -9,6 +9,8 @@ import { ReviewModule } from './review/review.module';
 import { getDatabaseConfig } from './config/database.config';
 import { ConfigService } from './config/config.service';
 import { ConfigModule } from './config/config.module';
+import { ServiceModule } from './service/service.module';
+import { DatabaseSeederModule } from './database/database-seeder.module';
 
 @Module({
   imports: [
@@ -21,7 +23,9 @@ import { ConfigModule } from './config/config.module';
     UserModule,
     AuthModule,
     CategoryModule,
-    ReviewModule
+    ReviewModule,
+    ServiceModule,
+    DatabaseSeederModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,4 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import { Category } from '../../category/entities/category.entity';
+import { Service } from '../../service/entities/service.entity';
+import { Review } from '../../review/entities/review.entity';
+import { UserRole } from '../enums/user-role.enum';
 
 @Entity()
 export class User {
@@ -17,6 +21,13 @@ export class User {
   @Column()
   password: string;
 
+  @Column({
+    type: 'varchar',
+    length: 20,
+    default: UserRole.CLIENT
+  })
+  role: UserRole;
+
   @Column({ name: 'business_name', length: 100, nullable: true })
   businessName: string;
 
@@ -29,12 +40,24 @@ export class User {
   @Column({ length: 255, nullable: true })
   website: string;
 
+  @OneToMany(() => Service, service => service.provider)
+  services: Service[];
+
+  @OneToMany(() => Review, review => review.professional)
+  receivedReviews: Review[];
+
+  @OneToMany(() => Review, review => review.reviewer)
+  givenReviews: Review[];
+
+  @Column({ type: 'float', default: 0 })
+  averageRating: number;
+
   @Column({ nullable: true })
   categoryId: number;
 
-  @ManyToOne('Category', { nullable: true })
+  @ManyToOne(() => Category, { nullable: true })
   @JoinColumn({ name: 'categoryId' })
-  category: any;
+  category: Category;
 
   @CreateDateColumn()
   createdAt: Date;

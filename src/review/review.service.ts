@@ -2,14 +2,18 @@ import { Injectable, NotFoundException, ConflictException, BadRequestException }
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Review } from './entities/review.entity';
+import { User } from '../user/entities/user.entity';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
+import { UserRole } from '../user/enums/user-role.enum';
 
 @Injectable()
 export class ReviewService {
   constructor(
     @InjectRepository(Review)
     private reviewRepository: Repository<Review>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
   async create(createReviewDto: CreateReviewDto, reviewerId: number): Promise<Review> {
@@ -27,12 +31,41 @@ export class ReviewService {
       throw new BadRequestException('You cannot review yourself');
     }
 
+    // Check if the professional exists and is actually a professional
+    const professional = await this.userRepository.findOne({
+      where: { id: createReviewDto.professionalId }
+    });
+
+    if (!professional) {
+      throw new NotFoundException('Professional not found');
+    }
+
+    if (professional.role !== UserRole.PROFESSIONAL) {
+      throw new BadRequestException('The user you are trying to review is not a professional');
+    }
+
+    // Create the review
     const review = this.reviewRepository.create({
       ...createReviewDto,
       reviewerId
     });
 
-    return await this.reviewRepository.save(review);
+    await this.reviewRepository.save(review);
+    
+    // Calculate new average rating
+    const result = await this.reviewRepository
+      .createQueryBuilder('review')
+      .where('review.professionalId = :professionalId', { professionalId: createReviewDto.professionalId })
+      .select('AVG(review.rating)', 'average')
+      .getRawOne();
+
+    // Update professional's average rating
+    await this.userRepository.update(
+      createReviewDto.professionalId,
+      { averageRating: Number(result.average) }
+    );
+
+    return review;
   }
 
   async findAll(): Promise<Review[]> {
