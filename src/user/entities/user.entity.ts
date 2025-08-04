@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { Category } from '../../category/entities/category.entity';
 import { Service } from '../../service/entities/service.entity';
+import { Review } from '../../review/entities/review.entity';
 import { UserRole } from '../enums/user-role.enum';
 
 @Entity()
@@ -41,6 +42,15 @@ export class User {
 
   @OneToMany(() => Service, service => service.provider)
   services: Service[];
+
+  @OneToMany(() => Review, review => review.professional)
+  receivedReviews: Review[];
+
+  @OneToMany(() => Review, review => review.reviewer)
+  givenReviews: Review[];
+
+  @Column({ type: 'float', default: 0 })
+  averageRating: number;
 
   @Column({ nullable: true })
   categoryId: number;

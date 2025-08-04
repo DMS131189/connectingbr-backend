@@ -1,4 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { User } from '../../user/entities/user.entity';
+import { Min, Max } from 'class-validator';
 
 @Entity()
 export class Review {
@@ -6,6 +8,8 @@ export class Review {
   id: number;
 
   @Column({ type: 'int', nullable: false })
+  @Min(1)
+  @Max(5)
   rating: number; // 1-5 stars
 
   @Column({ type: 'text', nullable: true })
@@ -17,13 +21,13 @@ export class Review {
   @Column({ nullable: false })
   professionalId: number; // User being reviewed
 
-  @ManyToOne('User', { nullable: false })
+  @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'reviewerId' })
-  reviewer: any;
+  reviewer: User;
 
-  @ManyToOne('User', { nullable: false })
+  @ManyToOne(() => User, user => user.receivedReviews, { nullable: false })
   @JoinColumn({ name: 'professionalId' })
-  professional: any;
+  professional: User;
 
   @CreateDateColumn()
   createdAt: Date;
