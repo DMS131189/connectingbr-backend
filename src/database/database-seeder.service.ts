@@ -3,6 +3,7 @@ import { DataSource } from 'typeorm';
 import { seedCategories } from './seeds/category.seed';
 import { seedServices } from './seeds/service.seed';
 import { seedUsers } from './seeds/user.seed';
+import { seedReviews } from './seeds/review.seed';
 
 @Injectable()
 export class DatabaseSeederService implements OnApplicationBootstrap {
@@ -13,9 +14,10 @@ export class DatabaseSeederService implements OnApplicationBootstrap {
       console.log('🌱 Starting database seeding...');
       
       // Execute seeds in order
-      await seedUsers(this.dataSource);     // Users first
-      await seedCategories(this.dataSource); // Then categories
-      await seedServices(this.dataSource);   // Then services
+      await seedUsers(this.dataSource);      // 1. Users first
+      await seedCategories(this.dataSource); // 2. Then categories
+      await seedServices(this.dataSource);   // 3. Then services
+      await seedReviews(this.dataSource);    // 4. Finally reviews
       
       console.log('✅ Database seeding completed');
     } catch (error) {
