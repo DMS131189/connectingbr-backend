@@ -30,6 +30,6 @@ export class Service {
   @JoinColumn({ name: 'providerId' })
   provider: User;
 
-  @Column({ name: 'providerId' })
+  @Column({ name: 'providerId', nullable: true })
   providerId: number;
 }

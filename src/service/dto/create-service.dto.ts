@@ -19,5 +19,6 @@ export class CreateServiceDto {
   rating: number;
 
   @IsNumber()
-  providerId: number;
+  @IsOptional()
+  providerId?: number;
 }
