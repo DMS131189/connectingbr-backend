@@ -9,24 +9,24 @@ export class SearchServiceDto {
 
   @IsOptional()
   @IsString()
-  q?: string;
+  query?: string;
 
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
   @Min(0)
-  precoMin?: number;
+  minPrice?: number;
 
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
   @Min(0)
-  precoMax?: number;
+  maxPrice?: number;
 
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
   @Min(0)
   @Max(5)
-  avaliacaoMin?: number;
+  minRating?: number;
 }

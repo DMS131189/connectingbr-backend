@@ -71,31 +71,31 @@ export class ServiceService {
     }
 
     // Busca por texto (nome ou descrição)
-    if (params.q) {
+    if (params.query) {
       queryBuilder.andWhere(
         '(service.name LIKE :query OR service.description LIKE :query)',
-        { query: `%${params.q}%` }
+        { query: `%${params.query}%` }
       );
     }
 
     // Filtro por preço mínimo
-    if (params.precoMin) {
-      queryBuilder.andWhere('CAST(REPLACE(REPLACE(service.price, "€", ""), "-", "") AS DECIMAL) >= :precoMin', {
-        precoMin: params.precoMin
+    if (params.minPrice) {
+      queryBuilder.andWhere('CAST(REPLACE(REPLACE(service.price, "€", ""), "-", "") AS DECIMAL) >= :minPrice', {
+        minPrice: params.minPrice
       });
     }
 
     // Filtro por preço máximo
-    if (params.precoMax) {
-      queryBuilder.andWhere('CAST(REPLACE(REPLACE(service.price, "€", ""), "-", "") AS DECIMAL) <= :precoMax', {
-        precoMax: params.precoMax
+    if (params.maxPrice) {
+      queryBuilder.andWhere('CAST(REPLACE(REPLACE(service.price, "€", ""), "-", "") AS DECIMAL) <= :maxPrice', {
+        maxPrice: params.maxPrice
       });
     }
 
     // Filtro por avaliação mínima
-    if (params.avaliacaoMin) {
-      queryBuilder.andWhere('service.rating >= :avaliacaoMin', {
-        avaliacaoMin: params.avaliacaoMin
+    if (params.minRating) {
+      queryBuilder.andWhere('service.rating >= :minRating', {
+        minRating: params.minRating
       });
     }
 
